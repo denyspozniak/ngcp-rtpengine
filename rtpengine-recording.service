@@ -8,9 +8,9 @@ Requires=network.target
 Type=simple
 User=rtpengine
 Group=rtpengine
-PIDFile=/run/rtpengine/rtpengine-recording-daemon.pid
-ExecStartPre=/usr/sbin/ngcp-rtpengine-recording-nfs-setup start
-ExecStart=/usr/sbin/rtpengine-recording -f -E --pidfile /run/rtpengine/rtpengine-recording-daemon.pid --config-file /etc/rtpengine/rtpengine-recording.conf
+PIDFile=/run/rtpengine/rtpengine-recording.pid
+ExecStartPre=/usr/sbin/rtpengine-recording-nfs-setup start
+ExecStart=/usr/sbin/rtpengine-recording -f -E --pidfile /run/rtpengine/rtpengine-recording.pid --config-file /etc/rtpengine/rtpengine-recording.conf
 
 [Install]
 WantedBy=multi-user.target

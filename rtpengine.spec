@@ -11,6 +11,7 @@ Source1:  rtpengine.service
 Source2:  rtpengine.tmpfiles
 Source3:  rtpengine-iptables-setup
 Source4:  rtpengine-recording.service
+Source5:  rtpengine-recording-nfs-setup
 Conflicts:	%{name}-kernel < %{version}-%{release}
 
 %global with_transcoding 1
@@ -130,6 +131,7 @@ install -Dpm 644 %{SOURCE2} %{buildroot}%{_tmpfilesdir}/%{name}.conf
 install -D -p -m755 %{SOURCE3} %{buildroot}%{_sbindir}/rtpengine-iptables-setup
 %if 0%{?with_transcoding} > 0
   install -Dpm 644 %{SOURCE4} %{buildroot}%{_unitdir}/%{name}-recording.service
+  install -D -p -m755 %{SOURCE5} %{buildroot}%{_sbindir}/rtpengine-recording-nfs-setup
 %endif
 %endif
 
@@ -259,6 +261,7 @@ true
 %{_initrddir}/%{name}-recording
 %else
 %{_unitdir}/%{name}-recording.service
+%{_sbindir}/rtpengine-recording-nfs-setup
 %endif
 
 # Sysconfig

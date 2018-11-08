@@ -10,10 +10,10 @@ LimitNOFILE=65535
 Type=simple
 User=rtpengine
 Group=rtpengine
-PIDFile=/run/rtpengine/rtpengine-daemon.pid
-EnvironmentFile=/etc/sysconfig/rtpengine-daemon
+PIDFile=/run/rtpengine/rtpengine.pid
+EnvironmentFile=/etc/sysconfig/rtpengine
 ExecStartPre=/usr/sbin/rtpengine-iptables-setup start
-ExecStart=/usr/sbin/rtpengine -f -E --pidfile /run/rtpengine/rtpengine-daemon.pid --config-file /etc/rtpengine/rtpengine.conf --table $TABLE
+ExecStart=/usr/sbin/rtpengine -f -E --pidfile /run/rtpengine/rtpengine.pid --config-file /etc/rtpengine/rtpengine.conf --table $TABLE
 ExecStopPost=/usr/sbin/rtpengine-iptables-setup stop
 PermissionsStartOnly=true
 
