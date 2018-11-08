@@ -1,12 +1,16 @@
-Name:		ngcp-rtpengine
-Version:	6.4.1.1
-Release:	2%{?dist}
+Name:		rtpengine
+Version:	6.4.2.1
+Release:	1%{?dist}
 Summary:	The Sipwise NGCP rtpengine
 
 Group:		System Environment/Daemons
 License:	GPLv3
-URL:		https://github.com/sipwise/rtpengine
-Source0:	https://github.com/sipwise/rtpengine/archive/mr%{version}/%{name}-%{version}.tar.gz
+URL:		  https://github.com/sipwise/rtpengine
+Source0:	https://github.com/sipwise/rtpengine/archive/mr%{version}/%{name}-mr%{version}.tar.gz
+Source1:  rtpengine.service
+Source2:  rtpengine.tmpfiles
+Source3:  rtpengine-iptables-setup
+Source4:  rtpengine-recording.service
 Conflicts:	%{name}-kernel < %{version}-%{release}
 
 %global with_transcoding 1
@@ -15,8 +19,11 @@ BuildRequires:	gcc make pkgconfig redhat-rpm-config
 BuildRequires:	glib2-devel libcurl-devel openssl-devel pcre-devel
 BuildRequires:	xmlrpc-c-devel zlib-devel hiredis-devel
 BuildRequires:	libpcap-devel libevent-devel json-glib-devel
+%if 0%{?rhel} == 7
+BuildRequires:  systemd
+%endif
 BuildRequires:  bcg729-devel
-Requires(pre):	shadow-utils
+Requires(pre):	shadow-utils, iptables
 
 %if 0%{?with_transcoding} > 0
 BuildRequires:  ffmpeg-devel
@@ -25,7 +32,7 @@ Requires(pre):	ffmpeg-libs
 
 Requires:	nc
 # Remain compat with other installations
-Provides:	ngcp-rtpengine = %{version}-%{release}
+Provides:	rtpengine = %{version}-%{release}
 
 %description
 The Sipwise NGCP rtpengine is a proxy for RTP traffic and other UDP based
@@ -69,15 +76,15 @@ BuildRequires:  gcc make redhat-rpm-config mysql-devel ffmpeg-devel
 
 %endif
 
-%define binname rtpengine
-%define archname rtpengine-mr
+# define name rtpengine
+# define archname rtpengine
 
 %{!?kversion: %define kversion %(uname -r)}
 # hint: this can be overridden with "--define kversion foo" on rpmbuild,
 # e.g. --define "kversion 2.6.32-696.23.1.el6.x86_64"
 
 %prep
-%setup -q -n %{archname}%{version}
+%setup -q -n %{name}-mr%{version}
 
 
 %build
@@ -99,36 +106,51 @@ cd ..
 
 %install
 # Install the userspace daemon
-install -D -p -m755 daemon/%{binname} %{buildroot}%{_sbindir}/%{binname}
+install -D -p -m755 daemon/%{name} %{buildroot}%{_sbindir}/%{name}
 # Install CLI (command line interface)
-install -D -p -m755 utils/%{binname}-ctl %{buildroot}%{_sbindir}/%{binname}-ctl
+install -D -p -m755 utils/%{name}-ctl %{buildroot}%{_sbindir}/%{name}-ctl
 # Install recording daemon
 %if 0%{?with_transcoding} > 0
-install -D -p -m755 recording-daemon/%{binname}-recording %{buildroot}%{_sbindir}/%{binname}-recording
+install -D -p -m755 recording-daemon/%{name}-recording %{buildroot}%{_sbindir}/%{name}-recording
 %endif
 
-## Install the init.d script and configuration file
-install -D -p -m755 el/%{binname}.init \
+## Install the INIT script
+%if "%{?_unitdir}" == ""
+install -D -p -m755 el/%{name}.init \
 	%{buildroot}%{_initrddir}/%{name}
 %if 0%{?with_transcoding} > 0
-install -D -p -m755 el/%{binname}-recording.init \
-        %{buildroot}%{_initrddir}/%{name}-recording
+install -D -p -m755 el/%{name}-recording.init \
+  %{buildroot}%{_initrddir}/%{name}-recording
 %endif
-install -D -p -m644 el/%{binname}.sysconfig \
-	%{buildroot}%{_sysconfdir}/sysconfig/%{binname}
+%else
+# systemd
+install -d %{buildroot}%{_unitdir}
+install -Dpm 644 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}.service
+install -Dpm 644 %{SOURCE2} %{buildroot}%{_tmpfilesdir}/%{name}.conf
+install -D -p -m755 %{SOURCE3} %{buildroot}%{_sbindir}/rtpengine-iptables-setup
 %if 0%{?with_transcoding} > 0
-install -D -p -m644 el/%{binname}-recording.sysconfig \
-	%{buildroot}%{_sysconfdir}/sysconfig/%{binname}-recording
+  install -Dpm 644 %{SOURCE4} %{buildroot}%{_unitdir}/%{name}-recording.service
 %endif
+%endif
+
+# Install configs
+install -D -p -m644 el/%{name}.sysconfig \
+	%{buildroot}%{_sysconfdir}/sysconfig/%{name}
+%if 0%{?with_transcoding} > 0
+install -D -p -m644 el/%{name}-recording.sysconfig \
+	%{buildroot}%{_sysconfdir}/sysconfig/%{name}-recording
+%endif
+
 mkdir -p %{buildroot}%{_sharedstatedir}/%{name}
-mkdir -p %{buildroot}%{_var}/spool/%{binname}
+mkdir -p %{buildroot}%{_var}/spool/%{name}
+
 
 # Install config files
-install -D -p -m644 etc/%{binname}.sample.conf \
-	%{buildroot}%{_sysconfdir}/%{binname}/%{binname}.conf
+install -D -p -m644 etc/%{name}.sample.conf \
+	%{buildroot}%{_sysconfdir}/%{name}/%{name}.conf
 %if 0%{?with_transcoding} > 0
-install -D -p -m644 etc/%{binname}-recording.sample.conf \
-	%{buildroot}%{_sysconfdir}/%{binname}/%{binname}-recording.conf
+install -D -p -m644 etc/%{name}-recording.sample.conf \
+	%{buildroot}%{_sysconfdir}/%{name}/%{name}-recording.conf
 %endif
 
 # Install the iptables plugin
@@ -161,10 +183,12 @@ getent passwd %{name} >/dev/null || /usr/sbin/useradd -r -g %{name} \
 
 
 %post
-if [ $1 -eq 1 ]; then
-        /sbin/chkconfig --add %{name} || :
-fi
-
+%if "%{?_unitdir}" == ""
+/sbin/chkconfig --add %{name}
+%else
+%tmpfiles_create %{name}.conf
+/usr/bin/systemctl -q enable %{name}.service
+%endif
 
 %post dkms
 # Add to DKMS registry, build, and install module
@@ -175,29 +199,42 @@ true
 
 
 %preun
-if [ $1 = 0 ] ; then
-        /sbin/service %{name} stop >/dev/null 2>&1
-        /sbin/chkconfig --del %{name}
+if [ $1 = 0 ]; then
+%if "%{?_unitdir}" == ""
+    /sbin/service %{name} stop > /dev/null 2>&1
+    /sbin/chkconfig --del %{name}
+%else
+    %{?systemd_preun %{name}.service}
+%endif
 fi
-
 
 %preun dkms
 # Remove from DKMS registry
 dkms remove -m %{name} -v %{version}-%{release} --rpm_safe_upgrade --all
 true
 
+%if "%{?_unitdir}" == ""
+%postun
+%{?systemd_postun %{name}.service}
+%endif
 
 %files
 # Userspace daemon
-%{_sbindir}/%{binname}
+%{_sbindir}/%{name}
 # CLI (command line interface)
-%{_sbindir}/%{binname}-ctl
+%{_sbindir}/%{name}-ctl
 # init.d script and configuration file
+%if "%{?_unitdir}" == ""
 %{_initrddir}/%{name}
-%config(noreplace) %{_sysconfdir}/sysconfig/%{binname}
+%else
+%{_unitdir}/%{name}.service
+%{_tmpfilesdir}/%{name}.conf
+%{_sbindir}/rtpengine-iptables-setup
+%endif
+%config(noreplace) %{_sysconfdir}/sysconfig/%{name}
 %attr(0750,%{name},%{name}) %dir %{_sharedstatedir}/%{name}
 # default config
-%{_sysconfdir}/%{binname}/%{binname}.conf
+%{_sysconfdir}/%{name}/%{name}.conf
 # Documentation
 %doc LICENSE README.md el/README.el.md debian/changelog debian/copyright
 
@@ -216,18 +253,26 @@ true
 %if 0%{?with_transcoding} > 0
 %files recording
 # Recording daemon
-%{_sbindir}/%{binname}-recording
+%{_sbindir}/%{name}-recording
 # Init script
+%if "%{?_unitdir}" == ""
 %{_initrddir}/%{name}-recording
+%else
+%{_unitdir}/%{name}-recording.service
+%endif
+
 # Sysconfig
-%config(noreplace) %{_sysconfdir}/sysconfig/%{binname}-recording
+%config(noreplace) %{_sysconfdir}/sysconfig/%{name}-recording
 # Default config
-%{_sysconfdir}/%{binname}/%{binname}-recording.conf
+%{_sysconfdir}/%{name}/%{name}-recording.conf
 # spool directory
-%attr(0750,%{name},%{name}) %dir %{_var}/spool/%{binname}
+%attr(0750,%{name},%{name}) %dir %{_var}/spool/%{name}
 %endif
 
 %changelog
+* Thu Nov 8 2018 Oleh Horbachov <gorbyo@gmail.com> - 6.4.2.1-1
+  - update to ngcp-rtpengine version 6.4.2.1
+  - refactored for run via systemd
 * Wed Oct 24 2018 Oleh Horbachov <gorbyo@gmail.com> - 6.4.1.1-2
   - update to ngcp-rtpengine version 6.4.1.1
   - enable bcg729
@@ -236,7 +281,7 @@ true
   - add packet recording
 * Thu Nov 24 2016 Marcel Weinberg <marcel@ng-voice.com>
   - Updated to ngcp-rtpengine version 4.5.0 and CentOS 7.2
-  - created a new variable "binname" to use rtpengine as name for the binaries
+  - created a new variable "name" to use rtpengine as name for the binaries
     (still using ngcp-rtpenginge as name of the package and daemon - aligned to the .deb packages)
   - fixed dependencies
 * Mon Nov 11 2013 Peter Dunkley <peter.dunkley@crocodilertc.net>

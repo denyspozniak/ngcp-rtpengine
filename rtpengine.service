@@ -1,0 +1,21 @@
+[Unit]
+Description=RTPENGINE RTP/media Proxy Daemon
+After=network.target
+Wants=iptables.service
+After=iptables.service
+Conflicts=firewalld.service
+
+[Service]
+LimitNOFILE=65535
+Type=simple
+User=rtpengine
+Group=rtpengine
+PIDFile=/run/rtpengine/rtpengine-daemon.pid
+EnvironmentFile=/etc/sysconfig/rtpengine-daemon
+ExecStartPre=/usr/sbin/rtpengine-iptables-setup start
+ExecStart=/usr/sbin/rtpengine -f -E --pidfile /run/rtpengine/rtpengine-daemon.pid --config-file /etc/rtpengine/rtpengine.conf --table $TABLE
+ExecStopPost=/usr/sbin/rtpengine-iptables-setup stop
+PermissionsStartOnly=true
+
+[Install]
+WantedBy=multi-user.target
