@@ -171,6 +171,7 @@ install -D -p -m644 kernel-module/rtpengine_config.h \
 	 %{buildroot}%{_usrsrc}/%{name}-%{version}-%{release}/rtpengine_config.h
 install -D -p -m644 debian/dkms.conf.in %{buildroot}%{_usrsrc}/%{name}-%{version}-%{release}/dkms.conf
 sed -i -e "s/__VERSION__/%{version}-%{release}/g" %{buildroot}%{_usrsrc}/%{name}-%{version}-%{release}/dkms.conf
+sed -i -e "s/ngcp-rtpengine/%{name}/g" %{buildroot}%{_usrsrc}/%{name}-%{version}-%{release}/dkms.conf
 
 # For RHEL 7, load the compiled kernel module on boot.
 %if 0%{?rhel} == 7
