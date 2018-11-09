@@ -237,7 +237,8 @@ true
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}
 %attr(0750,%{name},%{name}) %dir %{_sharedstatedir}/%{name}
 # default config
-%{_sysconfdir}/%{name}/%{name}.conf
+%config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
+
 # Documentation
 %doc LICENSE README.md el/README.el.md debian/changelog debian/copyright
 
