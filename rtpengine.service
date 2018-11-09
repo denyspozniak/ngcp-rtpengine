@@ -1,9 +1,6 @@
 [Unit]
 Description=RTPENGINE RTP/media Proxy Daemon
 After=network.target
-Wants=iptables.service
-After=iptables.service
-Conflicts=firewalld.service
 
 [Service]
 LimitNOFILE=65535
