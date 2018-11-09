@@ -7,7 +7,7 @@ PORT_MAX=50000
 MODNAME=xt_RTPENGINE
 MANAGE_IPTABLES=yes
 
-DEFAULTS=/etc/sysconfig/ngcp-rtpengine-daemon
+DEFAULTS=/etc/sysconfig/rtpengine
 
 # Load startup options if available
 if [ -f "$DEFAULTS" ]; then
