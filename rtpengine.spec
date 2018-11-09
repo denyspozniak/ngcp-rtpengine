@@ -1,6 +1,6 @@
 Name:		rtpengine
 Version:	6.4.2.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	The Sipwise NGCP rtpengine
 
 Group:		System Environment/Daemons
@@ -274,6 +274,8 @@ true
 %endif
 
 %changelog
+* Fri Nov 9 2018 Oleh Horbachov <gorbyo@gmail.com> - 6.4.2.2-1
+  - small fixes
 * Thu Nov 8 2018 Oleh Horbachov <gorbyo@gmail.com> - 6.4.2.1-1
   - update to ngcp-rtpengine version 6.4.2.1
   - refactored for run via systemd
