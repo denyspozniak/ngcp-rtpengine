@@ -1,6 +1,6 @@
 Name:		rtpengine
-Version:	6.4.2.1
-Release:	4%{?dist}
+Version:	7.4.1.6
+Release:	1%{?dist}
 Summary:	The Sipwise NGCP rtpengine
 
 Group:		System Environment/Daemons
