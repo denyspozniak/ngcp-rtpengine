@@ -1,11 +1,11 @@
 Name:		rtpengine
-Version:	6.4.2.1
-Release:	3%{?dist}
+Version:	7.4.1.6
+Release:	4%{?dist}
 Summary:	The Sipwise NGCP rtpengine
 
 Group:		System Environment/Daemons
 License:	GPLv3
-URL:		  https://github.com/sipwise/rtpengine
+URL:		https://github.com/sipwise/rtpengine
 Source0:	https://github.com/sipwise/rtpengine/archive/mr%{version}/%{name}-mr%{version}.tar.gz
 Source1:  rtpengine.service
 Source2:  rtpengine.tmpfiles
