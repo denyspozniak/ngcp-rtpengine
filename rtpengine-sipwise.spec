@@ -25,7 +25,7 @@ Requires(pre):	ffmpeg-libs
 %endif
 
 %if 0%{?rhel} == 8
-perl-podlators
+BuildRequires: perl-podlators
 %endif
 
 Requires:	nc
