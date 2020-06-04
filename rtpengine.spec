@@ -24,9 +24,9 @@ BuildRequires:	libpcap-devel libevent-devel json-glib-devel
 BuildRequires:  systemd
 %endif
 
-%if 0%{?rhel} == 8
+##%if 0%{?rhel} == 8
 BuildRequires: perl-podlators
-%endif
+##%endif
 
 BuildRequires:  bcg729-devel
 Requires(pre):	shadow-utils, iptables
