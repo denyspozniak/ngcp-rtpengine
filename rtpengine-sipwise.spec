@@ -24,6 +24,10 @@ BuildRequires:  ffmpeg-devel
 Requires(pre):	ffmpeg-libs
 %endif
 
+%if 0%{?rhel} == 8
+perl-podlators
+%endif
+
 Requires:	nc
 # Remain compat with other installations
 Provides:	ngcp-rtpengine = %{version}-%{release}
