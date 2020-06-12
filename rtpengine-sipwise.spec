@@ -1,6 +1,6 @@
 Name:		ngcp-rtpengine
 Version:	8.4.1.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	The Sipwise NGCP rtpengine
 
 Group:		System Environment/Daemons
@@ -42,7 +42,7 @@ drop-in replacement for any of the other available RTP and media proxies.
 Summary:	NGCP rtpengine in-kernel packet forwarding
 Group:		System Environment/Daemons
 BuildRequires:	gcc make redhat-rpm-config iptables-devel
-Requires:	iptables iptables-ipv6
+Requires:	iptables iptables-services
 Requires:	%{name}%{?_isa} = %{version}-%{release}
 Requires: 	%{name}-dkms = %{version}-%{release}
 
