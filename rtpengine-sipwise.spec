@@ -20,6 +20,11 @@ BuildRequires:	gperf perl-IPC-Cmd
 BuildRequires:  spandsp-devel
 Requires(pre):	shadow-utils
 
+# for mr9
+BuildRequires:	perl-podlators
+BuildRequires:	pkgconfig(libwebsockets)
+BuildRequires:	pkgconfig(spandsp)
+
 %if 0%{?with_transcoding} > 0
 BuildRequires:  ffmpeg-devel
 Requires(pre):	ffmpeg-libs
