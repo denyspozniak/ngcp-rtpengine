@@ -22,6 +22,7 @@ Requires(pre):	shadow-utils
 
 # for mr9
 BuildRequires:	perl-podlators
+BuildRequires:	libwebsockets
 BuildRequires:	pkgconfig(libwebsockets)
 BuildRequires:	pkgconfig(spandsp)
 
