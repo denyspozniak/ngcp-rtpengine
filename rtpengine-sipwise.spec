@@ -224,7 +224,7 @@ true
 # default config
 %{_sysconfdir}/%{binname}/%{binname}.conf
 # Documentation
-%doc LICENSE README.md el/README.el.md debian/changelog debian/copyright
+%doc LICENSE README.md el/README.md debian/changelog debian/copyright
 
 
 %files kernel
